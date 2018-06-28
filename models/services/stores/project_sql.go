@@ -12,6 +12,8 @@ const (
 	`
 	projectsGetAllSQL = "SELECT * FROM projects;"
 
+	projectsGetCountSQL = "SELECT COUNT(*) FROM projects "
+
 	projectsGetByIDSQL = "SELECT * FROM projects WHERE id=$1;"
 
 	projectsInsertSQL = `

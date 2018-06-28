@@ -39,6 +39,21 @@ func (ps *ProjectStore) GetByID(id string) (*models.Project, error) {
 	return project, err
 }
 
+func (ps *ProjectStore) GetCount(queryModifiers []QueryModifier) (int, error) {
+	var count int
+
+	query, vals := generateWhereStatement(&queryModifiers)
+	queryString := projectsGetCountSQL + query
+
+	err := ps.db.Get(&count, queryString, vals...)
+
+	if err != nil {
+		return -1, err
+	}
+
+	return count, nil
+}
+
 func (ps *ProjectStore) Insert(project *models.Project) error {
 	project.ID = id.New()
 
