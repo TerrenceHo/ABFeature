@@ -1,8 +1,6 @@
 package ABFeature
 
 import (
-	"net/http"
-
 	"github.com/TerrenceHo/ABFeature/config"
 	"github.com/TerrenceHo/ABFeature/controllers"
 	"github.com/TerrenceHo/ABFeature/loggers"
@@ -38,23 +36,29 @@ func Start() {
 
 	// initiate stores, and migrate tables
 	projectStore := stores.NewProjectStore(db)
+	experimentStore := stores.NewExperimentStore(db)
 
 	stores.CreateTables(
 		projectStore,
+		experimentStore,
 	)
 
 	// initiate services, connecting to stores
 	projectService := services.NewProjectService(projectStore, logger)
+	experimentService := services.NewExperimentService(experimentStore, logger)
 
 	// initiate http controllers, interfacing with services
-	projectController := controllers.NewProjectController(projectService, logger)
+	pagesController := controllers.NewPagesController(logger)
+	projectController := controllers.NewProjectController(projectService, experimentService, logger)
+	experimentController := controllers.NewExperimentController(experimentService, logger)
 
 	// Configuration for a new Echo Server
 	app := setupApp(viper)
 
+	// Mount routes for new server, according to their groupings
+	pagesController.MountRoutes(app.Group(""))
 	projectController.MountRoutes(app.Group("/projects"))
-
-	app.GET("/", home)
+	experimentController.MountRoutes(app.Group("/experiments"))
 
 	app.Logger.Fatal(app.Start(":" + viper.GetString("PORT")))
 }
@@ -75,10 +79,6 @@ func setupApp(viper *viper.Viper) *echo.Echo {
 	}))
 
 	return app
-}
-
-func home(ctx echo.Context) error {
-	return ctx.String(http.StatusOK, "App Running")
 }
 
 func must(err error) {

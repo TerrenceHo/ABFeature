@@ -84,9 +84,9 @@ Thus many to many relationships will require a joining table.
 
 #### Experiment
 - Get All Experiments
-    - /experiments?project=name
+    - /experiments?project=name GET
 - Get Experiment
-    - /experiments?project=name&experiment=name
+    - /experiments?project=name&experiment=name GET
 - Create Experiment
     - /experiments?project=name POST
 - Update Experiment
