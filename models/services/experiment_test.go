@@ -108,7 +108,35 @@ func TestUpdateExperiment(t *testing.T) {
 	assert.EqualError(err, ErrIdInvalid.Error())
 	assert.Nil(noExp, "Should be nil if there is any error.")
 
-	// TODO check actual outputs
+	testExperiment := models.Experiment{
+		ID:          "validID",
+		Name:        "Test Experiment",
+		Description: "Test",
+		Percentage:  0.5,
+		Enabled:     false,
+		ProjectID:   "ProjectID",
+	}
+	validInput := models.Experiment{
+		ID:         "validID",
+		Name:       "New Name",
+		Percentage: 0.5,
+		Enabled:    true,
+		ProjectID:  "ProjectID",
+	}
+	updatedExperiment := models.Experiment{
+		ID:          "validID",
+		Name:        "New Name",
+		Description: "Test",
+		Percentage:  0.5,
+		Enabled:     true,
+		ProjectID:   "ProjectID",
+	}
+	store.On("GetByID", testExperiment.ID).Return(&testExperiment, nil)
+	store.On("Update", &updatedExperiment).Return(nil)
+	experiment, err := service.UpdateExperiment(&validInput)
+	assert.Nil(err, "Project updating correctly should return nil error.")
+	assert.Equal(updatedExperiment.Name, experiment.Name, "Names should be equal.")
+
 	store.AssertExpectations(t)
 }
 
