@@ -18,11 +18,11 @@ var (
 )
 
 func newProjectService(store *mocks.IProjectStore) *ProjectService {
-	logger := new(mocks.ILogger)
+	logger := mocks.Logger{}
 	return NewProjectService(store, logger)
 }
 
-func TestGetAll(t *testing.T) {
+func TestProjectGetAll(t *testing.T) {
 	assert := assert.New(t)
 	store := new(mocks.IProjectStore)
 	service := newProjectService(store)
@@ -40,7 +40,7 @@ func TestGetAll(t *testing.T) {
 	store.AssertExpectations(t)
 }
 
-func TestGetProjectByID(t *testing.T) {
+func TestProjectGetProjectByID(t *testing.T) {
 	assert := assert.New(t)
 	store := new(mocks.IProjectStore)
 	service := newProjectService(store)
@@ -48,17 +48,17 @@ func TestGetProjectByID(t *testing.T) {
 	store.On("GetByID", "invalidID").Return(nil, stores.ErrNoProjectFound)
 	noProj, err := service.GetProjectByID("invalidID")
 	assert.Nil(noProj, "Querying with invalid ID should return no Projects.")
-	assert.EqualError(err, "no project found")
+	assert.EqualError(err, ErrProjectNotFound.Error())
 
 	store.On("GetByID", testProject.ID).Return(&testProject, nil)
 	project, err := service.GetProjectByID(testProject.ID)
-	assert.Nil(err, "For a valid car ID, error should be nil")
+	assert.Nil(err, "For a valid project ID, error should be nil")
 	assert.Equal(project.ID, testProject.ID)
 
 	store.AssertExpectations(t)
 }
 
-func TestAddProject(t *testing.T) {
+func TestProjectAddProject(t *testing.T) {
 	assert := assert.New(t)
 	store := new(mocks.IProjectStore)
 	service := newProjectService(store)
@@ -70,7 +70,7 @@ func TestAddProject(t *testing.T) {
 	}
 	noProject, err := service.AddProject(&invalidProject)
 	assert.Nil(noProject, "Project should not be valid when returned with err.")
-	assert.EqualError(err, "Project model validation failed.")
+	assert.EqualError(err, ErrProjectValidation.Error())
 
 	store.On("Insert", &testProject).Return(nil)
 	retProject, err := service.AddProject(&testProject)
@@ -82,7 +82,7 @@ func TestAddProject(t *testing.T) {
 	store.AssertExpectations(t)
 }
 
-func TestUpdateProject(t *testing.T) {
+func TestProjectUpdateProject(t *testing.T) {
 	assert := assert.New(t)
 	store := new(mocks.IProjectStore)
 	service := newProjectService(store)
@@ -94,12 +94,13 @@ func TestUpdateProject(t *testing.T) {
 	}
 
 	store.On("GetByID", "invalidID").Return(nil, stores.ErrNoProjectFound)
-	err := service.UpdateProject(&invalidProject)
-	assert.EqualError(err, "no project found")
+	project, err := service.UpdateProject(&invalidProject)
+	assert.EqualError(err, ErrProjectNotFound.Error())
+	assert.Nil(project, "Project should be nil if there is an error.")
 
 	invalidProject.ID = ""
-	err = service.UpdateProject(&invalidProject)
-	assert.EqualError(err, "ID cannot be an empty string.")
+	_, err = service.UpdateProject(&invalidProject)
+	assert.EqualError(err, ErrIdInvalid.Error())
 
 	validInput := models.Project{
 		ID:          testProject.ID,
@@ -114,19 +115,19 @@ func TestUpdateProject(t *testing.T) {
 	}
 	store.On("GetByID", testProject.ID).Return(&testProject, nil)
 	store.On("Update", &updatedProject).Return(nil)
-	err = service.UpdateProject(&validInput)
+	_, err = service.UpdateProject(&validInput)
 	assert.Nil(err, "Project updating correctly should return nil")
 
 	store.AssertExpectations(t)
 }
 
-func TestDeleteProject(t *testing.T) {
+func TestProjectDeleteProject(t *testing.T) {
 	assert := assert.New(t)
 	store := new(mocks.IProjectStore)
 	service := newProjectService(store)
 
 	err := service.DeleteProject("")
-	assert.EqualError(err, "ID cannot be an empty string.")
+	assert.EqualError(err, ErrIdInvalid.Error())
 
 	store.On("Delete", "validID").Return(nil)
 	err = service.DeleteProject("validID")

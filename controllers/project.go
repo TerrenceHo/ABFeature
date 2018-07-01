@@ -1,3 +1,6 @@
+// TODO Write Documentation for controllers
+//
+// TODO standard errors and return codes
 package controllers
 
 import (
@@ -13,18 +16,20 @@ import (
 // Interface for services, to interact with database related functions
 type IProjectService interface {
 	GetAllProjects() ([]*models.Project, error)
-	GetProjectByID(id string) (*models.Project, error)
+	GetProjectByID(projectID string) (*models.Project, error)
 	AddProject(project *models.Project) (*models.Project, error)
-	UpdateProject(project *models.Project) error
-	DeleteProject(id string) error
+	UpdateProject(project *models.Project) (*models.Project, error)
+	DeleteProject(projectID string) error
 }
 
 type ProjectController struct {
-	service IProjectService
-	logger  loggers.ILogger
+	service           IProjectService
+	experimentService IExperimentService
+	logger            loggers.ILogger
 }
 
-func NewProjectController(ps IProjectService, l loggers.ILogger) *ProjectController {
+func NewProjectController(ps IProjectService, es IExperimentService,
+	l loggers.ILogger) *ProjectController {
 	return &ProjectController{
 		service: ps,
 		logger:  l,
@@ -33,22 +38,31 @@ func NewProjectController(ps IProjectService, l loggers.ILogger) *ProjectControl
 
 // Mounts Routes to the Echo Router
 func (pc *ProjectController) MountRoutes(g *echo.Group) {
-	g.GET("", pc.getProjects)
-	g.POST("", pc.createProject)
-	g.PUT("", pc.updateProject)
-	g.DELETE("", pc.deleteProject)
+	g.GET("", pc.GetProjects)
+	g.POST("", pc.CreateProject)
+	g.PUT("", pc.UpdateProject)
+	g.DELETE("", pc.DeleteProject)
+	g.GET("/experiments", pc.GetAllExperiments)
 }
 
 // Wrapper depending on existance of project query param, holding "ID"
-func (pc *ProjectController) getProjects(c echo.Context) error {
+func (pc *ProjectController) GetProjects(c echo.Context) error {
 	project_id := c.QueryParam("project")
 	if project_id != "" {
-		return pc.getProject(c)
+		return pc.GetProject(c)
 	}
-	return pc.getAllProjects(c)
+	return pc.GetAllProjects(c)
 }
 
-func (pc *ProjectController) getAllProjects(c echo.Context) error {
+// Route -- /projects GET
+//
+// Input -- Requires no input parameters.
+//
+// Output -- Returns all projects, as an array of JSON objects, with all objects
+// under the key "data".  If an error
+// occured, then StatusInternalServerError is returned, with the error
+// description. Otherwise, returns with a 200 status request.
+func (pc *ProjectController) GetAllProjects(c echo.Context) error {
 	projects, err := pc.service.GetAllProjects()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -58,7 +72,17 @@ func (pc *ProjectController) getAllProjects(c echo.Context) error {
 	})
 }
 
-func (pc *ProjectController) getProject(c echo.Context) error {
+// Route -- /projects?project=project_id GET
+//
+// Input -- requires no input, only a query parameter of a valid Project ID.
+//
+// Output -- Return JSON object of Project with specified Project ID.  If
+// successful, it returns a 200 status response. If the ID provided was invalid,
+// it returns with a StatusBadRequest(400).  If the project was not found, then
+// StatusNotFound(404) is returned.  Otherwise, a StatusInternalServerError is
+// returned, indicating a server failure. The appropriate error message is
+// provided under the key "message".
+func (pc *ProjectController) GetProject(c echo.Context) error {
 	project_id := c.QueryParam("project")
 
 	project, err := pc.service.GetProjectByID(project_id)
@@ -77,7 +101,16 @@ func (pc *ProjectController) getProject(c echo.Context) error {
 	})
 }
 
-func (pc *ProjectController) createProject(c echo.Context) error {
+// Route -- /projects POST
+//
+// Input -- Requires a valid Project JSON Object, and creates and inserts the
+// Project into the database.
+//
+// Output -- Returns the created object with ID, and timestamp fields
+// instantiated, with a StatusOK(200) response under the key "data".  If the
+// provided JSON object was invalid or malformed, it returns a
+// StatusBadRequest(400) with the appropriate message under the key "message".
+func (pc *ProjectController) CreateProject(c echo.Context) error {
 	var body models.Project
 
 	if err := c.Bind(&body); err != nil {
@@ -94,20 +127,40 @@ func (pc *ProjectController) createProject(c echo.Context) error {
 	})
 }
 
-func (pc *ProjectController) updateProject(c echo.Context) error {
+// Route -- /projects PUT
+//
+// Input -- Requires a valid Project JSON object, and the ID of the project must
+// correspond to an already existing project.  Takes the Project and updates its
+// fields.
+//
+// Output -- Returns the updated object with updated fields, including the
+// UpdatedAt timestamp field, with a StatusOK(200) response under the key
+// "data". If the provided JSON object was invalid or malformed, it returns a
+// StatusBadRequest(400) under the key "message".
+func (pc *ProjectController) UpdateProject(c echo.Context) error {
 	var body models.Project
 	if err := c.Bind(&body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	err := pc.service.UpdateProject(&body)
+
+	project, err := pc.service.UpdateProject(&body)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return c.NoContent(http.StatusNoContent)
+	return c.JSON(http.StatusOK, echo.Map{
+		"data": project,
+	})
 }
 
-func (pc *ProjectController) deleteProject(c echo.Context) error {
+// Route -- /projects DELETE
+//
+// Input -- requires a valid ProjectID query parameter.  Deletes the project
+// with the associated Project ID.
+//
+// Output -- Returns StatusNoContent(204) if successful, otherwise returns
+// StatusBadRequest(400) with the appropriate message under "message"
+func (pc *ProjectController) DeleteProject(c echo.Context) error {
 	project_id := c.QueryParam("project")
 	err := pc.service.DeleteProject(project_id)
 	if err != nil {
@@ -117,7 +170,20 @@ func (pc *ProjectController) deleteProject(c echo.Context) error {
 }
 
 // TODO Add get all experiments, utilizing experiments service
-func (pc *ProjectController) getAllExperiments(c echo.Context) error {
-	// get all experiments
+func (pc *ProjectController) GetAllExperiments(c echo.Context) error {
+	project_id := c.QueryParam("project")
+	if project_id == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "No Project ID")
+	}
+
+	experiments, err := pc.experimentService.GetAllExperimentsByProject(project_id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"data": experiments,
+	})
+
 	return nil
 }

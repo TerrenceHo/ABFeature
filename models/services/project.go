@@ -1,17 +1,10 @@
 package services
 
 import (
-	"errors"
-
 	"github.com/TerrenceHo/ABFeature/loggers"
 	"github.com/TerrenceHo/ABFeature/models"
+	"github.com/TerrenceHo/ABFeature/models/services/stores"
 	"github.com/TerrenceHo/ABFeature/utils/id"
-)
-
-var (
-	ErrProjectValidation = errors.New("Project model validation failed.")
-
-	ErrIdInvalid = errors.New("ID cannot be an empty string.")
 )
 
 type IProjectStore interface {
@@ -35,36 +28,43 @@ func NewProjectService(store IProjectStore, l loggers.ILogger) *ProjectService {
 }
 
 func (p *ProjectService) GetAllProjects() ([]*models.Project, error) {
-	// run validations
 	return p.store.GetAll()
 }
 
-func (p *ProjectService) GetProjectByID(id string) (*models.Project, error) {
-	// run validations
-	if err := p.idIsValid(id); err != nil {
+func (p *ProjectService) GetProjectByID(projectID string) (*models.Project, error) {
+	if err := p.idIsValid(projectID); err != nil {
 		return nil, err
 	}
 
-	return p.store.GetByID(id)
+	project, err := p.store.GetByID(projectID)
+	if err != nil {
+		if err == stores.ErrNoProjectFound {
+			return nil, ErrProjectNotFound
+		}
+		return nil, err
+	}
+
+	return project, nil
 }
 
 func (p *ProjectService) AddProject(project *models.Project) (*models.Project, error) {
 	project.ID = id.New() // Create a new unique ID for the new project.
 	errs := project.Validate()
 	if len(errs) != 0 {
-		// log errors
+		p.logger.Info("ProjectService.AddProject -- validation failed. Errors: ", errs)
 		return nil, ErrProjectValidation
 	}
 	if err := p.store.Insert(project); err != nil {
+		p.logger.Error("ProjectService.AddProject -- unable to create Project. Error:", err.Error())
 		return nil, err
 	}
 	return project, nil
 }
 
-func (p *ProjectService) UpdateProject(project *models.Project) error {
+func (p *ProjectService) UpdateProject(project *models.Project) (*models.Project, error) {
 	old_project, err := p.GetProjectByID(project.ID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Bad way of doing this
@@ -77,17 +77,21 @@ func (p *ProjectService) UpdateProject(project *models.Project) error {
 
 	errs := old_project.Validate()
 	if len(errs) != 0 {
-		// log errors
-		return ErrProjectValidation
+		p.logger.Info("ProjectService.UpdateProject -- validation failed. Errors:", errs)
+		return nil, ErrProjectValidation
 	}
-	return p.store.Update(old_project)
+	if err := p.store.Update(old_project); err != nil {
+		p.logger.Error("ProjectService.UpdateProject -- unable to update Project. Error:", err.Error())
+		return nil, err
+	}
+	return old_project, nil
 }
 
-func (p *ProjectService) DeleteProject(id string) error {
-	if err := p.idIsValid(id); err != nil {
+func (p *ProjectService) DeleteProject(projectID string) error {
+	if err := p.idIsValid(projectID); err != nil {
 		return err
 	}
-	return p.store.Delete(id)
+	return p.store.Delete(projectID)
 }
 
 func (p *ProjectService) idIsValid(id string) error {

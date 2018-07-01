@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/TerrenceHo/ABFeature/models"
-	"github.com/TerrenceHo/ABFeature/utils/id"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -55,8 +54,6 @@ func (ps *ProjectStore) GetCount(queryModifiers []QueryModifier) (int, error) {
 }
 
 func (ps *ProjectStore) Insert(project *models.Project) error {
-	project.ID = id.New()
-
 	row := ps.db.QueryRow(
 		projectsInsertSQL,
 		project.ID,
@@ -71,7 +68,8 @@ func (ps *ProjectStore) Insert(project *models.Project) error {
 }
 
 func (ps *ProjectStore) Update(project *models.Project) error {
-	row := ps.db.QueryRow(projectsUpdateSQL,
+	row := ps.db.QueryRow(
+		projectsUpdateSQL,
 		project.ID,
 		project.Name,
 		project.Description,

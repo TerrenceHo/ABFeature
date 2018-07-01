@@ -11,23 +11,32 @@ type PagesController struct {
 	logger loggers.ILogger
 }
 
+// Creates controller with logger for extra pages that are not specific to any
+// other controller
 func NewPagesController(l loggers.ILogger) *PagesController {
 	return &PagesController{
 		logger: l,
 	}
 }
 
+// Mounts routes for extra pages
 func (p *PagesController) MountRoutes(c *echo.Group) {
-	c.GET("/", p.home)
-	c.GET("/health", p.health)
+	c.GET("/", p.Home)
+	c.GET("/health", p.Health)
 }
 
-func (p *PagesController) home(c echo.Context) error {
+// Home page, only return "App Running"
+func (p *PagesController) Home(c echo.Context) error {
 	return c.String(http.StatusOK, "App Running")
 }
 
-func (p *PagesController) health(c echo.Context) error {
+// Route -- /health
+//
+// Input -- nothing.
+//
+// Output -- JSON object indicating the service is alive
+func (p *PagesController) Health(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
-		"status": "Alive",
+		"data": "Alive",
 	})
 }

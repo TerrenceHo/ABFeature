@@ -10,11 +10,11 @@ const (
 			updated_at timestamptz DEFAULT NOW()
 		);
 	`
-	projectsGetAllSQL = "SELECT * FROM projects;"
+	projectsGetAllSQL = "SELECT * FROM projects"
 
 	projectsGetCountSQL = "SELECT COUNT(*) FROM projects "
 
-	projectsGetByIDSQL = "SELECT * FROM projects WHERE id=$1;"
+	projectsGetByIDSQL = "SELECT * FROM projects WHERE id=$1"
 
 	projectsInsertSQL = `
 		INSERT INTO projects (id, name, description)
@@ -28,5 +28,5 @@ const (
 		WHERE id=$1
 		RETURNING updated_at
 	`
-	projectsDeleteSQL = "DELETE FROM projects WHERE id=$1;"
+	projectsDeleteSQL = "DELETE FROM projects WHERE id=$1"
 )
