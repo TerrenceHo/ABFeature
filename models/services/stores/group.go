@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/TerrenceHo/ABFeature/models"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -55,7 +56,7 @@ func (gs *GroupStore) Insert(group *models.Group) error {
 }
 
 func (gs *GroupStore) Update(group *models.Group) error {
-	row := es.db.QueryRow(
+	row := gs.db.QueryRow(
 		groupsUpdateSQL,
 		group.ID,
 		group.Name,
@@ -68,7 +69,7 @@ func (gs *GroupStore) Update(group *models.Group) error {
 }
 
 func (gs *GroupStore) Delete(id string) error {
-	_, err := es.db.Exec(groupsDeleteSQL, id)
+	_, err := gs.db.Exec(groupsDeleteSQL, id)
 
 	if err != nil {
 		return ErrInvalidGroupEntry
@@ -77,7 +78,7 @@ func (gs *GroupStore) Delete(id string) error {
 	return nil
 }
 
-func (gs *GroupStore) getBy(query string, args interface{}) (*models.group, error) {
+func (gs *GroupStore) getBy(query string, args interface{}) (*models.Group, error) {
 	var group models.Group
 
 	if err := gs.db.Get(&group, query, args); err != nil {

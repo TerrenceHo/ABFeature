@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+// A Group is a feature that conducts all experiments onto the users in the
+// group.
 type Group struct {
 	// ID is programmatically generated
 	ID string `json:"ID" db:"id"`
@@ -32,10 +34,10 @@ type Group struct {
 // (2) Groups must have an ID
 func (g *Group) Validate() []error {
 	var errs []error
-	if p.ID == "" {
+	if g.ID == "" {
 		errs = append(errs, errors.New("ID primary key cannot be empty"))
 	}
-	if p.Name == "" {
+	if g.Name == "" {
 		errs = append(errs, errors.New("Please provide a Group name."))
 	}
 
