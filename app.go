@@ -12,8 +12,8 @@ import (
 	"go.uber.org/zap"
 )
 
-func Start() {
-	viper, err := config.ReadConfig("config")
+func Start(file string) {
+	viper, err := config.ReadConfig(file)
 	must(err)
 
 	// initiate database

@@ -1,11 +1,15 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"fmt"
 
-func ReadConfig(filename string) (*viper.Viper, error) {
+	"github.com/spf13/viper"
+)
+
+func ReadConfig(filepath string) (*viper.Viper, error) {
+	fmt.Println("Configuration file:", filepath)
 	v := viper.New()
-	v.SetConfigName(filename)
-	v.AddConfigPath("./config")
+	v.SetConfigFile(filepath)
 	err := v.ReadInConfig()
 	return v, err
 }
