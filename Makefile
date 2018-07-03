@@ -28,11 +28,14 @@ test:
 run: test
 	go run $(MAIN)
 
+docker:
+	docker build -t $(BINARY):$(VERSION) .
+
 docs:
 	godoc -http=:6061
 
-docker:
-	docker build -t $(BINARY):$(VERSION) .
+fmt:
+	go fmt ./...
 
 clean:
 	go clean
