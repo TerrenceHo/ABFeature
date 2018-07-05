@@ -11,7 +11,7 @@ const (
 		)
 	`
 
-	groupsGetAllSQL = "SELECT * FROM groups "
+	groupsGetAllSQL = "SELECT * FROM groups"
 
 	groupsGetCountSQL = "SELECT COUNT(*) FROM groups "
 

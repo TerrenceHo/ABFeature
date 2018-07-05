@@ -37,20 +37,24 @@ func Start(file string) {
 	// initiate stores, and migrate tables
 	projectStore := stores.NewProjectStore(db)
 	experimentStore := stores.NewExperimentStore(db)
+	groupStore := stores.NewGroupStore(db)
 
 	stores.CreateTables(
 		projectStore,
 		experimentStore,
+		groupStore,
 	)
 
 	// initiate services, connecting to stores
 	projectService := services.NewProjectService(projectStore, logger)
 	experimentService := services.NewExperimentService(experimentStore, logger)
+	groupService := services.NewGroupService(groupStore, logger)
 
 	// initiate http controllers, interfacing with services
 	pagesController := controllers.NewPagesController(logger)
 	projectController := controllers.NewProjectController(projectService, experimentService, logger)
 	experimentController := controllers.NewExperimentController(experimentService, logger)
+	groupController := controllers.NewGroupController(groupService, logger)
 
 	// Configuration for a new Echo Server
 	app := setupApp(viper)
@@ -59,6 +63,7 @@ func Start(file string) {
 	pagesController.MountRoutes(app.Group(""))
 	projectController.MountRoutes(app.Group("/projects"))
 	experimentController.MountRoutes(app.Group("/experiments"))
+	groupController.MountRoutes(app.Group("/groups"))
 
 	app.Logger.Fatal(app.Start(":" + viper.GetString("PORT")))
 }

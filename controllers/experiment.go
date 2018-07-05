@@ -6,7 +6,6 @@ import (
 	"github.com/TerrenceHo/ABFeature/loggers"
 	"github.com/TerrenceHo/ABFeature/models"
 	"github.com/TerrenceHo/ABFeature/models/services"
-	"github.com/TerrenceHo/ABFeature/models/services/stores"
 	"github.com/labstack/echo"
 )
 
@@ -66,7 +65,7 @@ func (ec *ExperimentController) GetExperiment(c echo.Context) error {
 	if err != nil {
 		if err == services.ErrIdInvalid {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-		} else if err == stores.ErrNoExperimentFound {
+		} else if err == services.ErrExperimentNotFound {
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())

@@ -24,12 +24,13 @@ func NewGroupStore(db *sqlx.DB) *GroupStore {
 	}
 }
 
-func (gs *GroupStore) GetAll(queryModifiers []QueryModifier) ([]*models.Group, error) {
+// func (gs *GroupStore) GetAll(queryModifiers []QueryModifier) ([]*models.Group, error) {
+func (gs *GroupStore) GetAll() ([]*models.Group, error) {
 	groups := []*models.Group{}
 
-	query, vals := generateWhereStatement(&queryModifiers)
-	queryString := groupsGetAllSQL + query
-	err := gs.db.Select(&groups, queryString, vals...)
+	// query, vals := generateWhereStatement(&queryModifiers)
+	// queryString := groupsGetAllSQL + query
+	err := gs.db.Select(&groups, groupsGetAllSQL)
 	if err != nil {
 		return nil, err
 	}

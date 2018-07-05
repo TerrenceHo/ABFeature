@@ -8,7 +8,7 @@ import (
 )
 
 type IGroupStore interface {
-	GetAll() (*models.Group, error)
+	GetAll() ([]*models.Group, error)
 	GetByID(id string) (*models.Group, error)
 	Insert(group *models.Group) error
 	Update(group *models.Group) error
@@ -27,9 +27,8 @@ func NewGroupService(store IGroupStore, l loggers.ILogger) *GroupService {
 	}
 }
 
-func (g *GroupService) GetAllGroups() (*models.Group, error) {
-	// return g.
-	return nil, nil
+func (g *GroupService) GetAllGroups() ([]*models.Group, error) {
+	return g.store.GetAll()
 }
 
 func (g *GroupService) GetGroupByID(groupID string) (*models.Group, error) {
