@@ -67,15 +67,7 @@ func (p *ProjectService) UpdateProject(project *models.Project) (*models.Project
 		return nil, err
 	}
 
-	// Bad way of doing this
-	if project.Name != "" {
-		old_project.Name = project.Name
-	}
-	if project.Description != "" {
-		old_project.Description = project.Description
-	}
-
-	errs := old_project.Validate()
+	errs := old_project.UpdateFields(project)
 	if len(errs) != 0 {
 		p.logger.Info("ProjectService.UpdateProject -- validation failed. Errors:", errs)
 		return nil, ErrProjectValidation

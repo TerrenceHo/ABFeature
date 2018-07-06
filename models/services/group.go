@@ -67,13 +67,7 @@ func (g *GroupService) UpdateGroup(group *models.Group) (*models.Group, error) {
 		return nil, err
 	}
 
-	if group.Name != "" {
-		old_group.Name = group.Name
-	}
-	if group.Description != "" {
-		old_group.Description = group.Description
-	}
-	errs := old_group.Validate()
+	errs := old_group.UpdateFields(group)
 	if len(errs) != 0 {
 		g.logger.Info("GroupService.UpdateGroup -- validation failed. Errors:", errs)
 		return nil, ErrGroupValidation

@@ -44,3 +44,17 @@ func (p *Project) Validate() []error {
 
 	return errs
 }
+
+// Updates a Project for it's respective fields. Takes in a new project, and
+// updates the project that it was called on (The pointer object).
+func (p *Project) UpdateFields(project *Project) []error {
+	// Bad way of doing this
+	if project.Name != "" {
+		p.Name = project.Name
+	}
+	if project.Description != "" {
+		p.Description = project.Description
+	}
+	errs := p.Validate()
+	return errs
+}

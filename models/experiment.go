@@ -64,3 +64,20 @@ func (e *Experiment) Validate() (errs []error) {
 
 	return errs
 }
+
+// Updates Experiment's fields, and runs validation on data
+func (e *Experiment) UpdateFields(experiment *Experiment) []error {
+	if experiment.Name != "" {
+		e.Name = experiment.Name
+	}
+	if experiment.Description != "" {
+		e.Description = experiment.Description
+	}
+	if experiment.Percentage != -1 {
+		e.Percentage = experiment.Percentage
+	}
+	e.Enabled = experiment.Enabled
+
+	errs := e.Validate()
+	return errs
+}

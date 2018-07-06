@@ -43,3 +43,15 @@ func (g *Group) Validate() []error {
 
 	return errs
 }
+
+// Updates Group fields, and runs validation
+func (g *Group) UpdateFields(group *Group) []error {
+	if group.Name != "" {
+		g.Name = group.Name
+	}
+	if group.Description != "" {
+		g.Description = group.Description
+	}
+	errs := g.Validate()
+	return errs
+}

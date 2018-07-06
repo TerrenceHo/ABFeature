@@ -67,18 +67,7 @@ func (e *ExperimentService) UpdateExperiment(experiment *models.Experiment) (*mo
 		return nil, err
 	}
 
-	if experiment.Name != "" {
-		old_experiment.Name = experiment.Name
-	}
-	if experiment.Description != "" {
-		old_experiment.Description = experiment.Description
-	}
-	if experiment.Percentage != -1 {
-		old_experiment.Percentage = experiment.Percentage
-	}
-	old_experiment.Enabled = experiment.Enabled
-
-	errs := old_experiment.Validate()
+	errs := old_experiment.UpdateFields(experiment)
 	if len(errs) != 0 {
 		// log errors
 		return nil, ErrExperimentValidation
