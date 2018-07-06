@@ -25,7 +25,11 @@ func (p *PagesController) MountRoutes(c *echo.Group) {
 	c.GET("/health", p.Health)
 }
 
-// Home page, only return "App Running"
+// Route -- /
+//
+// Input -- nothing. Is just the home page.
+//
+// Output -- String saying "App Running"
 func (p *PagesController) Home(c echo.Context) error {
 	return c.String(http.StatusOK, "App Running")
 }
