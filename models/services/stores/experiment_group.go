@@ -41,7 +41,7 @@ func (egs *ExperimentGroupStore) GetAll(queryModifiers []QueryModifier) ([]*mode
 	return experiment_groups, nil
 }
 
-func (egs *ExperimentGroupStore) GetByID(id string) (*models.Experiment, error) {
+func (egs *ExperimentGroupStore) GetByID(id string) (*models.ExperimentGroup, error) {
 	exp_group, err := egs.getBy(experimentsGroupsGetByIDSQL, id)
 	return exp_group, err
 }
@@ -60,7 +60,7 @@ func (egs *ExperimentGroupStore) Insert(exp_group *models.ExperimentGroup) error
 }
 
 func (egs *ExperimentGroupStore) Delete(id string) error {
-	_, err := es.db.Exec(experimentsGroupsDeleteSQL, id)
+	_, err := egs.db.Exec(experimentsGroupsDeleteSQL, id)
 	if err != nil {
 		return ErrInvalidExperimentGroupEntry
 	}
@@ -70,7 +70,7 @@ func (egs *ExperimentGroupStore) Delete(id string) error {
 func (egs *ExperimentGroupStore) getBy(query string, args interface{}) (*models.ExperimentGroup, error) {
 	var exp_group models.ExperimentGroup
 
-	if err := egs.db.Get(&exp, query, args); err != nil {
+	if err := egs.db.Get(&exp_group, query, args); err != nil {
 		if err == sql.ErrNoRows {
 			err = ErrNoExperimentGroupFound
 		}
