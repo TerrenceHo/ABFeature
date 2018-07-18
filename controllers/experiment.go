@@ -5,7 +5,7 @@ import (
 
 	"github.com/TerrenceHo/ABFeature/loggers"
 	"github.com/TerrenceHo/ABFeature/models"
-	"github.com/TerrenceHo/ABFeature/models/services"
+	"github.com/TerrenceHo/ABFeature/services"
 	"github.com/labstack/echo"
 )
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/TerrenceHo/ABFeature/mocks"
 	"github.com/TerrenceHo/ABFeature/models"
-	"github.com/TerrenceHo/ABFeature/models/services/stores"
+	"github.com/TerrenceHo/ABFeature/stores"
 	"github.com/stretchr/testify/assert"
 )
 

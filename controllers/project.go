@@ -8,8 +8,7 @@ import (
 
 	"github.com/TerrenceHo/ABFeature/loggers"
 	"github.com/TerrenceHo/ABFeature/models"
-	"github.com/TerrenceHo/ABFeature/models/services"
-	"github.com/TerrenceHo/ABFeature/models/services/stores"
+	"github.com/TerrenceHo/ABFeature/services"
 	"github.com/labstack/echo"
 )
 
@@ -90,7 +89,7 @@ func (pc *ProjectController) GetProject(c echo.Context) error {
 	if err != nil {
 		if err == services.ErrIdInvalid {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-		} else if err == stores.ErrNoProjectFound {
+		} else if err == services.ErrProjectNotFound {
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())

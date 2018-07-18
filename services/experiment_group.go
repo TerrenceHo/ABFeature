@@ -3,7 +3,7 @@ package services
 import (
 	"github.com/TerrenceHo/ABFeature/loggers"
 	"github.com/TerrenceHo/ABFeature/models"
-	"github.com/TerrenceHo/ABFeature/models/services/stores"
+	"github.com/TerrenceHo/ABFeature/stores"
 	"github.com/TerrenceHo/ABFeature/utils/id"
 )
 
