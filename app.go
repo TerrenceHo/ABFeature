@@ -1,7 +1,6 @@
 package ABFeature
 
 import (
-	"github.com/TerrenceHo/ABFeature/config"
 	"github.com/TerrenceHo/ABFeature/controllers"
 	"github.com/TerrenceHo/ABFeature/loggers"
 	"github.com/TerrenceHo/ABFeature/services"
@@ -12,10 +11,8 @@ import (
 	"go.uber.org/zap"
 )
 
-func Start(file string) {
-	viper, err := config.ReadConfig(file)
-	must(err)
-
+func Start(viper *viper.Viper) {
+	var err error
 	// initiate database
 	db := stores.NewConnection(
 		viper.GetString("DATABASE.ENGINE"),
