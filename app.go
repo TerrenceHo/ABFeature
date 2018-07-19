@@ -67,7 +67,7 @@ func Start(viper *viper.Viper) {
 
 func setupApp(viper *viper.Viper) *echo.Echo {
 	app := echo.New()
-	app.HideBanner = viper.GetBool("HIDEBANNER")
+	app.HideBanner = true
 	app.Debug = viper.GetBool("DEBUG")
 	app.Pre(middleware.RequestID())
 	app.Use(middleware.Gzip())

@@ -41,7 +41,7 @@ func main() {
 	flags.StringP("file", "f", "./config/config.yaml", "set path to configuration file.")
 	flags.StringP("port", "p", "31337", "set HTTP port of abfeature will run on, between 1024-65535.")
 	flags.BoolP("debug", "d", true, "run abfeature in debug mode.")
-	flags.Bool("hidebanner", true, "hide banner of router.")
+	flags.Bool("hidebanner", false, "hide banner of router.")
 	flags.String("database-engine", "sqlite", "set database engine used for data persistence.")
 	flags.String("database-name", "", "set name of database.")
 	flags.String("database-user", "", "set user of database.")
@@ -72,7 +72,9 @@ func serve() {
 		os.Exit(0)
 	}
 
-	fmt.Println(logo)
+	if !viper.GetBool("HIDEBANNER") {
+		fmt.Println(logo)
+	}
 
 	filepath := v.GetString("FILE")
 	// Read in configuration file
