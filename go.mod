@@ -1,0 +1,30 @@
+module github.com/TerrenceHo/ABFeature
+
+require (
+	github.com/fsnotify/fsnotify v1.4.7
+	github.com/hashicorp/hcl v0.0.0-20180404174102-ef8a98b0bbce
+	github.com/inconshreveable/mousetrap v0.0.0-20141017200713-76626ae9c91c
+	github.com/jmoiron/sqlx v0.0.0-20180614180643-0dae4fefe7c0
+	github.com/labstack/echo v0.0.0-20180412143600-6d227dfea4d2
+	github.com/labstack/gommon v0.0.0-20180613044413-d6898124de91
+	github.com/lib/pq v0.0.0-20180523175426-90697d60dd84
+	github.com/magiconair/properties v1.8.0
+	github.com/mitchellh/mapstructure v0.0.0-20180511142126-bb74f1db0675
+	github.com/pelletier/go-toml v1.2.0
+	github.com/rs/xid v1.2.0
+	github.com/spf13/afero v1.1.1
+	github.com/spf13/cast v1.2.0
+	github.com/spf13/cobra v0.0.3
+	github.com/spf13/jwalterweatherman v0.0.0-20180109140146-7c0cea34c8ec
+	github.com/spf13/pflag v1.0.1
+	github.com/spf13/viper v1.0.2
+	github.com/stretchr/objx v0.1.1
+	github.com/stretchr/testify v1.2.2
+	go.uber.org/atomic v1.3.2
+	go.uber.org/multierr v1.1.0
+	go.uber.org/zap v1.8.0
+	golang.org/x/crypto v0.0.0-20180621125126-a49355c7e3f8
+	golang.org/x/sys v0.0.0-20180622082034-63fc586f45fe
+	golang.org/x/text v0.3.0
+	gopkg.in/yaml.v2 v2.2.1
+)
