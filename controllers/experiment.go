@@ -49,7 +49,7 @@ func (ec *ExperimentController) MountRoutes(g *echo.Group) {
 	g.POST("", ec.CreateExperiment)
 	g.PUT("", ec.UpdateExperiment)
 	g.DELETE("", ec.DeleteExperiment)
-	g.GET("/groups", ec.GetAllGroupsByExperiment)
+	g.GET("/groups", ec.GetAllExperimentsByGroup)
 	g.POST("/groups", ec.CreateExperimentGroup)
 	g.DELETE("/groups", ec.DeleteExperimentGroup)
 }
@@ -188,22 +188,22 @@ func (ec *ExperimentController) DeleteExperiment(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
-// Route -- /experiments/groups?experiment=experiment_id GET
+// Route -- /experiments/groups?group=group_id GET
 //
-// Input -- requires a valid Experiment ID query parameter.
+// Input -- requires a valid Group ID query parameter.
 //
-// Output -- Returns all groups associated with the experiment_id, with all
+// Output -- Returns a list of all experiments the group is associated with all
 // objects under the kep "data". If an error occured, then
 // StatusInternalServerError is returned, with the error description. Otherwise,
 // returns with a 200 status request.
-func (ec *ExperimentController) GetAllGroupsByExperiment(c echo.Context) error {
-	experiment_id := c.QueryParam("experiment")
-	exp_groups, err := ec.expGrService.GetAllGroupsByExperiment(experiment_id)
+func (ec *ExperimentController) GetAllExperimentsByGroup(c echo.Context) error {
+	group_id := c.QueryParam("group")
+	experiments, err := ec.expGrService.GetAllExperimentsByGroup(group_id)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"data": exp_groups,
+		"data": experiments,
 	})
 }
 

@@ -54,7 +54,7 @@ func Start(viper *viper.Viper) {
 	pagesController := controllers.NewPagesController(logger)
 	projectController := controllers.NewProjectController(projectService, experimentService, logger)
 	experimentController := controllers.NewExperimentController(experimentService, experimentGroupService, logger)
-	groupController := controllers.NewGroupController(groupService, logger)
+	groupController := controllers.NewGroupController(groupService, experimentGroupService, logger)
 
 	// Configuration for a new Echo Server
 	app := setupApp(viper)

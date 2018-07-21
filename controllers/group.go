@@ -18,14 +18,16 @@ type IGroupService interface {
 }
 
 type GroupController struct {
-	service IGroupService
-	logger  loggers.ILogger
+	service      IGroupService
+	expGrService IExperimentGroupService
+	logger       loggers.ILogger
 }
 
-func NewGroupController(gs IGroupService, l loggers.ILogger) *GroupController {
+func NewGroupController(gs IGroupService, egs IExperimentGroupService, l loggers.ILogger) *GroupController {
 	return &GroupController{
-		service: gs,
-		logger:  l,
+		service:      gs,
+		expGrService: egs,
+		logger:       l,
 	}
 }
 
@@ -35,6 +37,7 @@ func (gc *GroupController) MountRoutes(g *echo.Group) {
 	g.POST("", gc.CreateGroup)
 	g.PUT("", gc.UpdateGroup)
 	g.DELETE("", gc.DeleteGroup)
+	g.GET("/experiments", gc.GetAllGroupsByExperiment)
 }
 
 // Wrapper function to determine GetGroup or GetAllGroups
@@ -161,4 +164,24 @@ func (gc *GroupController) DeleteGroup(c echo.Context) error {
 	}
 
 	return c.NoContent(http.StatusNoContent)
+}
+
+// Route -- /groups/experiments?experiment=experiment_id GET
+//
+// Input -- requires a valid group id query parameter. Returns all experiments
+// with associated group id.
+//
+// Output -- Returns all groups associated with the experiment_id, with all
+// under the key "data".  If an error occured, then
+// StatusInternalServerError is returned, with the error description. Otherwise,
+// returns with a 200 status request.
+func (gc *GroupController) GetAllGroupsByExperiment(c echo.Context) error {
+	experiment_id := c.QueryParam("experiment")
+	groups, err := gc.expGrService.GetAllGroupsByExperiment(experiment_id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"data": groups,
+	})
 }
