@@ -157,3 +157,20 @@ Could use Echo logger, or some other logger.  Undecided. Options below
 - go.uber.org/zap
 - github.com/golang/glog
 - github.com/sirupsen/logrus
+
+## TODO
+Things to do
+- Implement users
+    - Implement way to select users
+    - Decide on algorithm for binning users, by random %
+- Implement query to decide if group is part of experiment
+- Standarize errors using ModelErrors interface
+- Fully test Go modules
+- Unit test controllers with mock services 
+- Document services and stores
+- Implement variable stores SQL statements
+    - Different SQL statements based on type of Database
+    - i.e. MySQL uses `?` for parameters, while Postgres uses `$`, and SQLite
+      uses both
+- Actually test with SQLite.
+- Complete logging, for all errors in services and controllers.
