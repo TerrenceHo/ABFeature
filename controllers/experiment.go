@@ -18,17 +18,28 @@ type IExperimentService interface {
 	DeleteExperiment(experimentID string) error
 }
 
+// Interface defined for a ExperimentGroupService
+type IExperimentGroupService interface {
+	GetAllGroupsByExperiment(experimentID string) ([]*models.Group, error)
+	GetAllExperimentsByGroup(groupID string) ([]*models.Experiment, error)
+	GetExperimentGroupByID(id string) (*models.ExperimentGroup, error)
+	AddExperimentGroup(exp_group *models.ExperimentGroup) (*models.ExperimentGroup, error)
+	DeleteExperimentGroup(experimentID, groupID string) error
+}
+
 type ExperimentController struct {
-	service IExperimentService
-	logger  loggers.ILogger
+	service      IExperimentService
+	expGrService IExperimentGroupService
+	logger       loggers.ILogger
 }
 
 // Creates and returns an ExperimentController struct with a ExperimentService
 // and logger.
-func NewExperimentController(es IExperimentService, l loggers.ILogger) *ExperimentController {
+func NewExperimentController(es IExperimentService, egs IExperimentGroupService, l loggers.ILogger) *ExperimentController {
 	return &ExperimentController{
-		service: es,
-		logger:  l,
+		service:      es,
+		expGrService: egs,
+		logger:       l,
 	}
 }
 
@@ -38,6 +49,9 @@ func (ec *ExperimentController) MountRoutes(g *echo.Group) {
 	g.POST("", ec.CreateExperiment)
 	g.PUT("", ec.UpdateExperiment)
 	g.DELETE("", ec.DeleteExperiment)
+	g.GET("/groups", ec.GetAllGroupsByExperiment)
+	g.POST("/groups", ec.CreateExperimentGroup)
+	g.DELETE("/groups", ec.DeleteExperimentGroup)
 }
 
 // Wrapper function to determine for GetExperiment or GetAllExperiments
@@ -171,5 +185,67 @@ func (ec *ExperimentController) DeleteExperiment(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
+	return c.NoContent(http.StatusNoContent)
+}
+
+// Route -- /experiments/groups?experiment=experiment_id GET
+//
+// Input -- requires a valid Experiment ID query parameter.
+//
+// Output -- Returns all groups associated with the experiment_id, with all
+// objects under the kep "data". If an error occured, then
+// StatusInternalServerError is returned, with the error description. Otherwise,
+// returns with a 200 status request.
+func (ec *ExperimentController) GetAllGroupsByExperiment(c echo.Context) error {
+	experiment_id := c.QueryParam("experiment")
+	exp_groups, err := ec.expGrService.GetAllGroupsByExperiment(experiment_id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"data": exp_groups,
+	})
+}
+
+// Route /experiments/groups POST
+//
+// Input -- requires a valid ExperimentGroupObject. Serves as a joining entry
+// between a group and an experiment.
+//
+// Output -- Returns the created object with ID, and timestamp fields
+// instantiated, with a StatusOK(200) response under the key "data".  If the
+// provided JSON object was invalid or malformed, it returns a
+// StatusBadRequest(400) with the appropriate message under the key "message".
+func (ec *ExperimentController) CreateExperimentGroup(c echo.Context) error {
+	var body models.ExperimentGroup
+
+	if err := c.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	exp_group, err := ec.expGrService.AddExperimentGroup(&body)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"data": exp_group,
+	})
+}
+
+// Route -- /experiments/groups?experiment_group DELETE
+//
+// Input -- requires a valid experiment_group id. Deletes the association
+// between group and project.
+//
+// Output -- Returns StatusNoContent(204) if successful, otherwise returns
+// StatusBadRequest(400) with the appropriate message under "message"
+func (ec *ExperimentController) DeleteExperimentGroup(c echo.Context) error {
+	experiment_id := c.QueryParam("experiment")
+	group_id := c.QueryParam("group")
+	err := ec.expGrService.DeleteExperimentGroup(experiment_id, group_id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
 	return c.NoContent(http.StatusNoContent)
 }

@@ -24,21 +24,24 @@ func NewExperimentGroupStore(db *sqlx.DB) *ExperimentGroupStore {
 	}
 }
 
-func (egs *ExperimentGroupStore) GetAll(queryModifiers []QueryModifier) ([]*models.ExperimentGroup, error) {
-	experiment_groups := []*models.ExperimentGroup{}
-	var queryString string
-	query, vals := generateWhereStatement(&queryModifiers)
-	if len(queryModifiers) > 0 {
-		queryString = experimentsGroupsGetAllSQL + query
-	} else {
-		queryString = ""
-	}
-	err := egs.db.Select(&experiment_groups, queryString, vals)
+func (egs *ExperimentGroupStore) GetAllGroupsByExperiment(experiment_id string) ([]*models.Group, error) {
+	groups := []*models.Group{}
+
+	err := egs.db.Select(&groups, experimentsGroupsGetAllByExperimentSQL, experiment_id)
 	if err != nil {
 		return nil, err
 	}
+	return groups, nil
+}
 
-	return experiment_groups, nil
+func (egs *ExperimentGroupStore) GetAllExperimentsByGroup(group_id string) ([]*models.Experiment, error) {
+	experiments := []*models.Experiment{}
+
+	err := egs.db.Select(&experiments, experimentsGroupsGetAllByGroupSQL, group_id)
+	if err != nil {
+		return nil, err
+	}
+	return experiments, nil
 }
 
 func (egs *ExperimentGroupStore) GetByID(id string) (*models.ExperimentGroup, error) {
@@ -59,8 +62,8 @@ func (egs *ExperimentGroupStore) Insert(exp_group *models.ExperimentGroup) error
 	return nil
 }
 
-func (egs *ExperimentGroupStore) Delete(id string) error {
-	_, err := egs.db.Exec(experimentsGroupsDeleteSQL, id)
+func (egs *ExperimentGroupStore) Delete(experimentID, groupID string) error {
+	_, err := egs.db.Exec(experimentsGroupsDeleteSQL, experimentID, groupID)
 	if err != nil {
 		return ErrInvalidExperimentGroupEntry
 	}
@@ -77,4 +80,8 @@ func (egs *ExperimentGroupStore) getBy(query string, args interface{}) (*models.
 		return nil, err
 	}
 	return &exp_group, nil
+}
+
+func (egs *ExperimentGroupStore) migrate() {
+	egs.db.MustExec(experimentsGroupsCreateTableSQL)
 }

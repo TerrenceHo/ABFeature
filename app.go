@@ -35,22 +35,25 @@ func Start(viper *viper.Viper) {
 	projectStore := stores.NewProjectStore(db)
 	experimentStore := stores.NewExperimentStore(db)
 	groupStore := stores.NewGroupStore(db)
+	experimentGroupStore := stores.NewExperimentGroupStore(db)
 
 	stores.CreateTables(
 		projectStore,
 		experimentStore,
 		groupStore,
+		experimentGroupStore,
 	)
 
 	// initiate services, connecting to stores
 	projectService := services.NewProjectService(projectStore, logger)
 	experimentService := services.NewExperimentService(experimentStore, logger)
 	groupService := services.NewGroupService(groupStore, logger)
+	experimentGroupService := services.NewExperimentGroupStore(experimentGroupStore, logger)
 
 	// initiate http controllers, interfacing with services
 	pagesController := controllers.NewPagesController(logger)
 	projectController := controllers.NewProjectController(projectService, experimentService, logger)
-	experimentController := controllers.NewExperimentController(experimentService, logger)
+	experimentController := controllers.NewExperimentController(experimentService, experimentGroupService, logger)
 	groupController := controllers.NewGroupController(groupService, logger)
 
 	// Configuration for a new Echo Server

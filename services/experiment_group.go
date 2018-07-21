@@ -8,10 +8,11 @@ import (
 )
 
 type IExperimentGroupStore interface {
-	GetAll(queryModifiers []stores.QueryModifier) ([]*models.ExperimentGroup, error)
+	GetAllGroupsByExperiment(experiment_id string) ([]*models.Group, error)
+	GetAllExperimentsByGroup(group_id string) ([]*models.Experiment, error)
 	GetByID(id string) (*models.ExperimentGroup, error)
 	Insert(exp_group *models.ExperimentGroup) error
-	Delete(id string) error
+	Delete(experimentID, groupID string) error
 }
 
 type ExperimentGroupService struct {
@@ -26,7 +27,20 @@ func NewExperimentGroupStore(store IExperimentGroupStore, l loggers.ILogger) *Ex
 	}
 }
 
-// func (eg *ExperimentGroupService) GetAll
+func (eg *ExperimentGroupService) GetAllGroupsByExperiment(experimentID string) ([]*models.Group, error) {
+	if err := eg.idIsValid(experimentID); err != nil {
+		return nil, err
+	}
+	return eg.store.GetAllGroupsByExperiment(experimentID)
+}
+
+func (eg *ExperimentGroupService) GetAllExperimentsByGroup(groupID string) ([]*models.Experiment, error) {
+	if err := eg.idIsValid(groupID); err != nil {
+		return nil, err
+	}
+	return eg.store.GetAllExperimentsByGroup(groupID)
+}
+
 func (eg *ExperimentGroupService) GetExperimentGroupByID(id string) (*models.ExperimentGroup, error) {
 	if err := eg.idIsValid(id); err != nil {
 		return nil, err
@@ -55,11 +69,14 @@ func (eg *ExperimentGroupService) AddExperimentGroup(exp_group *models.Experimen
 	return exp_group, nil
 }
 
-func (eg *ExperimentGroupService) DeleteExperimentGroup(id string) error {
-	if err := eg.idIsValid(id); err != nil {
+func (eg *ExperimentGroupService) DeleteExperimentGroup(experimentID, groupID string) error {
+	if err := eg.idIsValid(experimentID); err != nil {
 		return err
 	}
-	return eg.store.Delete(id)
+	if err := eg.idIsValid(groupID); err != nil {
+		return err
+	}
+	return eg.store.Delete(experimentID, groupID)
 }
 
 func (eg *ExperimentGroupService) idIsValid(id string) error {

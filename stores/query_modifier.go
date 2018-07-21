@@ -37,6 +37,9 @@ func QueryMod(col string, operator QueryModifierOp, value interface{}) QueryModi
 }
 
 func generateWhereStatement(modifiers *[]QueryModifier) (string, []interface{}) {
+	if len(*modifiers) == 0 {
+		return "", nil
+	}
 	var args []interface{}
 	where := "WHERE "
 

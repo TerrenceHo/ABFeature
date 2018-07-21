@@ -15,6 +15,18 @@ const (
 
 	experimentsGroupsGetAllSQL = "SELECT * FROM experiments_groups "
 
+	experimentsGroupsGetAllByExperimentSQL = `
+		SELECT g.* FROM groups g 
+		INNER JOIN experiments_groups eg ON g.id = eg.group_id 
+		WHERE eg.experiment_id=$1
+	`
+
+	experimentsGroupsGetAllByGroupSQL = `
+		SELECT e.* from experiments e
+		INNER JOIN experiments_groups eg on e.id = eg.experiment_id
+		WHERE eg.group_id=$1
+	`
+
 	experimentsGroupsGetByIDSQL = "SELECT * FROM experiments_groups WHERE id=$1"
 
 	experimentsGroupsGetCountSQL = "SELECT COUNT(*) FROM experiments_groups "
@@ -25,5 +37,5 @@ const (
 		RETURNING created_at, updated_at
 	`
 
-	experimentsGroupsDeleteSQL = "DELETE FROM experimentsGroups WHERE id=$1"
+	experimentsGroupsDeleteSQL = "DELETE FROM experiments_groups WHERE experiment_id=$1 AND group_id=$2"
 )
