@@ -11,6 +11,7 @@ type IExperimentGroupStore interface {
 	GetAllGroupsByExperiment(experiment_id string) ([]*models.Group, error)
 	GetAllExperimentsByGroup(group_id string) ([]*models.Experiment, error)
 	GetByID(id string) (*models.ExperimentGroup, error)
+	GetByExperimentAndGroup(experimentID, groupID string) (*models.ExperimentGroup, error)
 	Insert(exp_group *models.ExperimentGroup) error
 	Delete(experimentID, groupID string) error
 }
@@ -47,6 +48,24 @@ func (eg *ExperimentGroupService) GetExperimentGroupByID(id string) (*models.Exp
 	}
 
 	exp_group, err := eg.store.GetByID(id)
+	if err != nil {
+		if err == stores.ErrNoExperimentGroupFound {
+			return nil, ErrExperimentGroupNotFound
+		}
+		return nil, err
+	}
+	return exp_group, nil
+}
+
+func (eg *ExperimentGroupService) GetByExperimentAndGroup(experimentID, groupID string) (*models.ExperimentGroup, error) {
+	if err := eg.idIsValid(experimentID); err != nil {
+		return nil, err
+	}
+	if err := eg.idIsValid(groupID); err != nil {
+		return nil, err
+	}
+
+	exp_group, err := eg.store.GetByExperimentAndGroup(experimentID, groupID)
 	if err != nil {
 		if err == stores.ErrNoExperimentGroupFound {
 			return nil, ErrExperimentGroupNotFound

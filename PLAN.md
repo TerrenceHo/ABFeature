@@ -139,6 +139,20 @@ Thus many to many relationships will require a joining table.
 - Get all Experiments associated
     - /users/experiments?user=name GET
 
+#### Necessary Routes for checking access
+- Check if a user has access to an experiment
+    - Check if experiment is enabled.
+    - Check if user is in a group that is added to the experiment
+    - Check if user is added to the experiment
+    - Check if user gets feature based on percentage
+- Check if group has access to experiment
+    - Check if experiment is enabled
+    - Check if group is added to experiment
+- Get accessible experiments a user can access
+    - Get experiments where user is added to a group that is added to the
+      experiment.
+    - Get experiments where user can access an experiment.
+
 ## External Services and Dependencies
 #### Dep
 Dep is dependency management, for Go packages.  Considering switching to vgo, if proposal is accepted and widely used.

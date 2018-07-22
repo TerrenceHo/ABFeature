@@ -4,15 +4,20 @@ import (
 	"net/http"
 
 	"github.com/TerrenceHo/ABFeature/loggers"
+	"github.com/TerrenceHo/ABFeature/models"
 	"github.com/TerrenceHo/ABFeature/services"
 	"github.com/labstack/echo"
 )
 
-// type IExperimentGroupService interface {
-// 	GetExperimentGroupByID(id string) (*models.ExperimentGroup, error)
-// 	AddExperimentGroup(exp_group *models.ExperimentGroup) (*models.ExperimentGroup, error)
-// 	DeleteExperimentGroup(id string) error
-// }
+// Interface defined for a ExperimentGroupService
+type IExperimentGroupService interface {
+	GetAllGroupsByExperiment(experimentID string) ([]*models.Group, error)
+	GetAllExperimentsByGroup(groupID string) ([]*models.Experiment, error)
+	GetByExperimentAndGroup(experimentID, groupID string) (*models.ExperimentGroup, error)
+	GetExperimentGroupByID(id string) (*models.ExperimentGroup, error)
+	AddExperimentGroup(exp_group *models.ExperimentGroup) (*models.ExperimentGroup, error)
+	DeleteExperimentGroup(experimentID, groupID string) error
+}
 
 type ExperimentGroupController struct {
 	service IExperimentGroupService

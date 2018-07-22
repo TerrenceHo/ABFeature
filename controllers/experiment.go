@@ -18,15 +18,6 @@ type IExperimentService interface {
 	DeleteExperiment(experimentID string) error
 }
 
-// Interface defined for a ExperimentGroupService
-type IExperimentGroupService interface {
-	GetAllGroupsByExperiment(experimentID string) ([]*models.Group, error)
-	GetAllExperimentsByGroup(groupID string) ([]*models.Experiment, error)
-	GetExperimentGroupByID(id string) (*models.ExperimentGroup, error)
-	AddExperimentGroup(exp_group *models.ExperimentGroup) (*models.ExperimentGroup, error)
-	DeleteExperimentGroup(experimentID, groupID string) error
-}
-
 type ExperimentController struct {
 	service      IExperimentService
 	expGrService IExperimentGroupService

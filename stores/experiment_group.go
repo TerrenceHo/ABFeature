@@ -49,6 +49,15 @@ func (egs *ExperimentGroupStore) GetByID(id string) (*models.ExperimentGroup, er
 	return exp_group, err
 }
 
+func (egs *ExperimentGroupStore) GetByExperimentAndGroup(experimentID, groupID string) (*models.ExperimentGroup, error) {
+	exp_group, err := egs.getBy(
+		experimentsGroupGetByExperimentAndGroupSQL,
+		experimentID,
+		groupID,
+	)
+	return exp_group, err
+}
+
 func (egs *ExperimentGroupStore) Insert(exp_group *models.ExperimentGroup) error {
 	row := egs.db.QueryRow(
 		experimentsGroupsInsertSQL,
@@ -70,10 +79,10 @@ func (egs *ExperimentGroupStore) Delete(experimentID, groupID string) error {
 	return nil
 }
 
-func (egs *ExperimentGroupStore) getBy(query string, args interface{}) (*models.ExperimentGroup, error) {
+func (egs *ExperimentGroupStore) getBy(query string, args ...interface{}) (*models.ExperimentGroup, error) {
 	var exp_group models.ExperimentGroup
 
-	if err := egs.db.Get(&exp_group, query, args); err != nil {
+	if err := egs.db.Get(&exp_group, query, args...); err != nil {
 		if err == sql.ErrNoRows {
 			err = ErrNoExperimentGroupFound
 		}

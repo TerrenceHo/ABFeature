@@ -55,6 +55,13 @@ func Start(viper *viper.Viper) {
 	projectController := controllers.NewProjectController(projectService, experimentService, logger)
 	experimentController := controllers.NewExperimentController(experimentService, experimentGroupService, logger)
 	groupController := controllers.NewGroupController(groupService, experimentGroupService, logger)
+	accessController := controllers.NewAccessController(
+		projectService,
+		experimentService,
+		groupService,
+		experimentGroupService,
+		logger,
+	)
 
 	// Configuration for a new Echo Server
 	app := setupApp(viper)
@@ -64,6 +71,7 @@ func Start(viper *viper.Viper) {
 	projectController.MountRoutes(app.Group("/projects"))
 	experimentController.MountRoutes(app.Group("/experiments"))
 	groupController.MountRoutes(app.Group("/groups"))
+	accessController.MountRoutes(app.Group("/access"))
 
 	app.Logger.Fatal(app.Start(":" + viper.GetString("PORT")))
 }

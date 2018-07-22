@@ -29,6 +29,11 @@ const (
 
 	experimentsGroupsGetByIDSQL = "SELECT * FROM experiments_groups WHERE id=$1"
 
+	experimentsGroupGetByExperimentAndGroupSQL = `
+		SELECT * FROM experiments_groups
+		WHERE experiment_id=$1 AND group_id=$2
+	`
+
 	experimentsGroupsGetCountSQL = "SELECT COUNT(*) FROM experiments_groups "
 
 	experimentsGroupsInsertSQL = `
