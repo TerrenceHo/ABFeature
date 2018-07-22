@@ -1,9 +1,13 @@
 GO=go
+MOCK=mockery
 BINARY=abfeature
 MAIN=cmd/ABFeature/main.go
-VERSION=0.0.2
-LDFLAGS=-ldflags "-X main.Version=${VERSION}"
-MOCK=mockery
+
+VERSION=`git describe --abbrev=0 --tags`
+GIT_HASH=`git rev-parse HEAD`
+BUILD_TIME=`TZ=UTC date -u '+%Y-%m-%dT%H:%M:%SZ'`
+
+LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.GitHash=${GIT_HASH} -X main.BuildTime=${BUILD_TIME}"
 
 .PHONY: clean test docs
 
@@ -12,16 +16,16 @@ default: install
 build: test
 	$(GO) build $(LDFLAGS) -o $(BINARY) $(MAIN)
 
-build-darwin: test
+build-darwin-amd64: test
 	GOOS=darwin GOARCH=amd64 $(GO) build $(LDFLAGS) -o bin/$(BINARY)-darwin $(MAIN)
 
-build-linux: test
+build-linux-amd64: test
 	GOOS=linux GOARCH=amd64 $(GO) build $(LDFLAGS) -o bin/$(BINARY)-linux $(MAIN)
 
-build-windows: test
+build-windows-amd64: test
 	GOOS=windows GOARCH=amd64 $(GO) build $(LDFLAGS) -o bin/$(BINARY)-windows $(MAIN)
 
-all: clean test build-darwin build-linux build-windows
+all: clean test build-darwin-amd64 build-linux-amd64 build-windows-amd64
 
 test:
 	$(GO) test -v ./...

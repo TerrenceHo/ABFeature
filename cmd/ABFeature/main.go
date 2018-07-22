@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/TerrenceHo/ABFeature"
 	"github.com/spf13/cobra"
@@ -18,10 +19,17 @@ const (
 \____|__  /______  /  \___  /   /_______  /\____|__  /____|  |______/  |____|_  /_______  /
         \/       \/       \/            \/         \/                         \/        \/ 
 	`
+
+	GOARCH string = runtime.GOARCH
+
+	GOOS string = runtime.GOOS
 )
 
 var (
-	Version string
+	Version   string
+	GitHash   string
+	BuildTime string
+	GoVersion string = runtime.Version()
 )
 
 var mainCmd = &cobra.Command{
@@ -68,7 +76,9 @@ func main() {
 func serve() {
 	v := viper.GetViper()
 	if v.GetBool("VERSION") {
-		fmt.Printf("abfeature v%s\n", Version)
+		fmt.Printf("abfeature %s %s %s/%s\n", Version, GoVersion, GOOS, GOARCH)
+		fmt.Printf("git hash: %s\n", GitHash)
+		fmt.Printf("built at: %s\n", BuildTime)
 		os.Exit(0)
 	}
 
