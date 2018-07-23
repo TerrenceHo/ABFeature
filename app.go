@@ -48,7 +48,7 @@ func Start(viper *viper.Viper) {
 	projectService := services.NewProjectService(projectStore, logger)
 	experimentService := services.NewExperimentService(experimentStore, logger)
 	groupService := services.NewGroupService(groupStore, logger)
-	experimentGroupService := services.NewExperimentGroupStore(experimentGroupStore, logger)
+	experimentGroupService := services.NewExperimentGroupService(experimentGroupStore, logger)
 
 	// initiate http controllers, interfacing with services
 	pagesController := controllers.NewPagesController(logger)

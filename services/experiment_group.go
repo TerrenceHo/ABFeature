@@ -21,7 +21,7 @@ type ExperimentGroupService struct {
 	logger loggers.ILogger
 }
 
-func NewExperimentGroupStore(store IExperimentGroupStore, l loggers.ILogger) *ExperimentGroupService {
+func NewExperimentGroupService(store IExperimentGroupStore, l loggers.ILogger) *ExperimentGroupService {
 	return &ExperimentGroupService{
 		store:  store,
 		logger: l,

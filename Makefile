@@ -54,6 +54,8 @@ clean:
 gen-mocks:
 	$(MOCK) -name=IProjectStore -dir=./services
 	$(MOCK) -name=IExperimentStore -dir=./services
+	$(MOCK) -name=IGroupStore -dir=./services
+	$(MOCK) -name=IExperimentGroupStore -dir=./services
 
 encrypt-config:
 	gpg -c config/config.yaml
