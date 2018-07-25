@@ -24,6 +24,7 @@ func Start(viper *viper.Viper) {
 	)
 	err = db.Ping()
 	must(err)
+	defer db.Close()
 
 	// create logger
 	loggerUnsugared, err := zap.NewDevelopment()
