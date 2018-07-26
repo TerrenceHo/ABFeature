@@ -1,6 +1,12 @@
 package ABFeature
 
 import (
+	"context"
+	"fmt"
+	"os"
+	"os/signal"
+	"time"
+
 	"github.com/TerrenceHo/ABFeature/controllers"
 	"github.com/TerrenceHo/ABFeature/loggers"
 	"github.com/TerrenceHo/ABFeature/services"
@@ -74,7 +80,23 @@ func Start(viper *viper.Viper) {
 	groupController.MountRoutes(app.Group("/groups"))
 	accessController.MountRoutes(app.Group("/access"))
 
-	app.Logger.Fatal(app.Start(":" + viper.GetString("PORT")))
+	// Start server
+	go func() {
+		app.Logger.Fatal(app.Start(":" + viper.GetString("PORT")))
+	}()
+
+	// Graceful shutdown channel
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, os.Kill)
+	<-quit
+	fmt.Println("Shutting down server...")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := app.Shutdown(ctx); err != nil {
+		app.Logger.Fatal(err)
+	}
+	fmt.Println("Shutdown ABFeature server. Goodbye.")
 }
 
 func setupApp(viper *viper.Viper) *echo.Echo {

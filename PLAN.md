@@ -187,4 +187,6 @@ Things to do
     - i.e. MySQL uses `?` for parameters, while Postgres uses `$`, and SQLite
       uses both
 - Actually test with SQLite.
+    - Requires CGO, eliminates cross compilation
 - Complete logging, for all errors in services and controllers.
+- Add TLS options
