@@ -59,7 +59,7 @@ func Start(viper *viper.Viper) {
 
 	// initiate http controllers, interfacing with services
 	pagesController := controllers.NewPagesController(logger)
-	projectController := controllers.NewProjectController(projectService, experimentService, logger)
+	projectController := controllers.NewProjectController(projectService, logger)
 	experimentController := controllers.NewExperimentController(experimentService, experimentGroupService, logger)
 	groupController := controllers.NewGroupController(groupService, experimentGroupService, logger)
 	accessController := controllers.NewAccessController(

@@ -27,8 +27,7 @@ type ProjectController struct {
 	logger            loggers.ILogger
 }
 
-func NewProjectController(ps IProjectService, es IExperimentService,
-	l loggers.ILogger) *ProjectController {
+func NewProjectController(ps IProjectService, l loggers.ILogger) *ProjectController {
 	return &ProjectController{
 		service: ps,
 		logger:  l,
@@ -41,7 +40,7 @@ func (pc *ProjectController) MountRoutes(g *echo.Group) {
 	g.POST("", pc.CreateProject)
 	g.PUT("", pc.UpdateProject)
 	g.DELETE("", pc.DeleteProject)
-	g.GET("/experiments", pc.GetAllExperiments)
+	// g.GET("/experiments", pc.GetAllExperiments)
 }
 
 // Wrapper depending on existance of project query param, holding "ID"
@@ -169,20 +168,20 @@ func (pc *ProjectController) DeleteProject(c echo.Context) error {
 }
 
 // TODO Add get all experiments, utilizing experiments service
-func (pc *ProjectController) GetAllExperiments(c echo.Context) error {
-	project_id := c.QueryParam("project")
-	if project_id == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "No Project ID")
-	}
+// func (pc *ProjectController) GetAllExperiments(c echo.Context) error {
+// 	project_id := c.QueryParam("project")
+// 	if project_id == "" {
+// 		return echo.NewHTTPError(http.StatusBadRequest, "No Project ID")
+// 	}
 
-	experiments, err := pc.experimentService.GetAllExperimentsByProject(project_id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
+// 	experiments, err := pc.experimentService.GetAllExperimentsByProject(project_id)
+// 	if err != nil {
+// 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+// 	}
 
-	return c.JSON(http.StatusOK, echo.Map{
-		"data": experiments,
-	})
+// 	return c.JSON(http.StatusOK, echo.Map{
+// 		"data": experiments,
+// 	})
 
-	return nil
-}
+// 	return nil
+// }
