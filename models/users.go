@@ -19,7 +19,7 @@ type User struct {
 	// Description of user. User details. Human purposes only.
 	Description string `json:"Description" db:"description"`
 
-	Active bool `json:"Active" db:"active"`
+	// Active bool `json:"Active" db:"active"`
 
 	// Metadata
 	CreatedAt time.Time `json:"CreatedAt" db:"created_at"`

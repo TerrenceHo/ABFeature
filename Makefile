@@ -56,6 +56,9 @@ gen-mocks:
 	$(MOCK) -name=IExperimentStore -dir=./services
 	$(MOCK) -name=IGroupStore -dir=./services
 	$(MOCK) -name=IExperimentGroupStore -dir=./services
+	$(MOCK) -name=IUserStore -dir=./services
+	$(MOCK) -name=IProjectService -dir=./controllers
+	$(MOCK) -name=IExperimentService -dir=./controllers
 
 encrypt-config:
 	gpg -c config/config.yaml
