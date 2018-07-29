@@ -20,6 +20,7 @@ func CreateTables(stores ...Store) {
 	}
 }
 
+// TODO: Actually test SQLite engine, and add a SQLite Driver
 func NewConnection(engine, user, password, dbname, port, host string) *sqlx.DB {
 	var dbConnection string
 	switch engine {
