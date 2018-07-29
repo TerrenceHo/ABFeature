@@ -84,7 +84,14 @@ func (u *UserService) DeleteUser(userID string) error {
 	if err := u.idIsValid(userID); err != nil {
 		return err
 	}
-	return u.store.Delete(userID)
+
+	if err := u.store.Delete(userID); err != nil {
+		if err == stores.ErrNoUserFound {
+			return ErrUserNotFound
+		}
+		return err
+	}
+	return nil
 }
 
 func (u *UserService) idIsValid(id string) error {

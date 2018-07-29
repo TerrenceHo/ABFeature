@@ -45,6 +45,9 @@ docs:
 fmt:
 	$(GO) fmt ./...
 
+vet: 
+	$(GO) vet -v ./...
+
 clean:
 	$(GO) clean
 	rm -rf bin/$(BINARY)*

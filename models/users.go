@@ -11,7 +11,7 @@ import (
 // user, regardless of the percentage set in the experiment.
 type User struct {
 	// ID is programmatically genereated
-	ID string `json:ID" db:"id"`
+	ID string `json:"ID" db:"id"`
 
 	// Human readable Name
 	Name string `json:"Name" db:"name"`
