@@ -48,6 +48,10 @@ fmt:
 vet: 
 	$(GO) vet -v ./...
 
+coverage:
+	$(GO) test -cover -coverprofile=c.out ./...
+	$(GO) tool cover -html=c.out -o coverage.html
+
 clean:
 	$(GO) clean
 	rm -rf bin/$(BINARY)*

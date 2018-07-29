@@ -21,8 +21,7 @@ const (
 	`
 
 	GOARCH string = runtime.GOARCH
-
-	GOOS string = runtime.GOOS
+	GOOS   string = runtime.GOOS
 )
 
 var (

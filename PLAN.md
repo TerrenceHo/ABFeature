@@ -174,13 +174,13 @@ Could use Echo logger, or some other logger.  Undecided. Options below
 
 ## TODO
 Things to do
-- Implement users
+- ~~Implement users~~
     - Implement way to select users
     - Decide on algorithm for binning users, by random %
-- Implement query to decide if group is part of experiment
+- ~~Implement query to decide if group is part of experiment~~
 - Standarize errors using ModelErrors interface
-- Fully test Go modules
 - Unit test controllers with mock services 
+    - Partially started
 - Document services and stores
 - Implement variable stores SQL statements
     - Different SQL statements based on type of Database
@@ -188,5 +188,10 @@ Things to do
       uses both
 - Actually test with SQLite.
     - Requires CGO, eliminates cross compilation
+- Test with Docker
 - Complete logging, for all errors in services and controllers.
 - Add TLS options
+- Add Cache to stores
+    - Cache will implement stores, so services will not have to change
+- Review Error handling on controllers
+- Integration Testing

@@ -9,6 +9,7 @@ func TestGenerateWhereStatement(t *testing.T) {
 		resultQuery  string
 		resultValues []interface{}
 	}{
+		{"no args", []QueryModifier{}, "", nil},
 		{"single arg", []QueryModifier{QueryMod("id", EQ, "123")}, "WHERE id=$1 ", []interface{}{"123"}},
 		{"two args with AND", []QueryModifier{QueryMod("id", EQ, 123), And, QueryMod("val", NE, "abc")}, "WHERE id=$1 AND val!=$2 ", []interface{}{123, "abc"}},
 		{"bad args", []QueryModifier{QueryMod("", EQ, "")}, "", nil},
