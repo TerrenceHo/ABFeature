@@ -22,8 +22,8 @@ const (
 	`
 
 	experimentsGroupsGetAllByGroupSQL = `
-		SELECT e.* from experiments e
-		INNER JOIN experiments_groups eg on e.id = eg.experiment_id
+		SELECT e.* FROM experiments e
+		INNER JOIN experiments_groups eg ON e.id = eg.experiment_id
 		WHERE eg.group_id=$1
 	`
 
