@@ -42,12 +42,14 @@ func Start(viper *viper.Viper) {
 	projectStore := stores.NewProjectStore(db)
 	experimentStore := stores.NewExperimentStore(db)
 	groupStore := stores.NewGroupStore(db)
+	userStore := stores.NewUserStore(db)
 	experimentGroupStore := stores.NewExperimentGroupStore(db)
 
 	stores.CreateTables(
 		projectStore,
 		experimentStore,
 		groupStore,
+		userStore,
 		experimentGroupStore,
 	)
 
@@ -55,6 +57,7 @@ func Start(viper *viper.Viper) {
 	projectService := services.NewProjectService(projectStore, logger)
 	experimentService := services.NewExperimentService(experimentStore, logger)
 	groupService := services.NewGroupService(groupStore, logger)
+	userService := services.NewUserService(userStore, logger)
 	experimentGroupService := services.NewExperimentGroupService(experimentGroupStore, logger)
 
 	// initiate http controllers, interfacing with services
@@ -62,6 +65,7 @@ func Start(viper *viper.Viper) {
 	projectController := controllers.NewProjectController(projectService, logger)
 	experimentController := controllers.NewExperimentController(experimentService, experimentGroupService, logger)
 	groupController := controllers.NewGroupController(groupService, experimentGroupService, logger)
+	userController := controllers.NewUserController(userService, logger)
 	accessController := controllers.NewAccessController(
 		projectService,
 		experimentService,
@@ -78,6 +82,7 @@ func Start(viper *viper.Viper) {
 	projectController.MountRoutes(app.Group("/projects"))
 	experimentController.MountRoutes(app.Group("/experiments"))
 	groupController.MountRoutes(app.Group("/groups"))
+	userController.MountRoutes(app.Group("/users"))
 	accessController.MountRoutes(app.Group("/access"))
 
 	// Start server

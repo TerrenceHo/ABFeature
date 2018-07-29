@@ -7,13 +7,13 @@ const (
 			name text,
 			description text,
 			created_at timestamptz DEFAULT NOW(),
-			updated_at timestamptz DEFAULT NOW
+			updated_at timestamptz DEFAULT NOW()
 		)
 	`
 
 	usersGetAllSQL = "SELECT * FROM users "
 
-	usersGetByIDSQL = "SELECT * FROM experiments WHERE id=$1"
+	usersGetByIDSQL = "SELECT * FROM users WHERE id=$1"
 
 	usersInsertSQL = `
 		INSERT INTO users (id, name, description)
