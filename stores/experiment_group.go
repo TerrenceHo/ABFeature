@@ -29,6 +29,10 @@ func (egs *ExperimentGroupStore) GetAllGroupsByExperiment(experiment_id string) 
 
 	err := egs.db.Select(&groups, experimentsGroupsGetAllByExperimentSQL, experiment_id)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			// TODO: replace with proper error
+			return nil, err
+		}
 		return nil, err
 	}
 	return groups, nil
