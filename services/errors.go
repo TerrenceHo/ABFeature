@@ -13,6 +13,8 @@ var (
 
 	ErrExperimentGroupValidation = errors.New("ExperimentGroup model validation failed.")
 
+	ErrUserGroupValidation = errors.New("UserGroup model validation failed.")
+
 	ErrIdInvalid = errors.New("ID cannot be an empty string.")
 
 	ErrProjectNotFound = errors.New("Project cannot be found.")
@@ -24,4 +26,6 @@ var (
 	ErrUserNotFound = errors.New("User cannot be found.")
 
 	ErrExperimentGroupNotFound = errors.New("Experiment Group cannot be found.")
+
+	ErrUserGroupNotFound = errors.New("User Group cannot be found.")
 )

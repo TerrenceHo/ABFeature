@@ -64,6 +64,7 @@ gen-mocks:
 	$(MOCK) -name=IGroupStore -dir=./services
 	$(MOCK) -name=IExperimentGroupStore -dir=./services
 	$(MOCK) -name=IUserStore -dir=./services
+	$(MOCK) -name=IUserGroupStore -dir=./services
 	$(MOCK) -name=IProjectService -dir=./controllers
 	$(MOCK) -name=IExperimentService -dir=./controllers
 

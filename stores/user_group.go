@@ -29,7 +29,7 @@ func (ugs *UserGroupStore) GetAllUsersByGroup(group_id string) ([]*models.User, 
 	if err != nil {
 		return nil, err
 	}
-	return groups
+	return users, nil
 }
 
 func (ugs *UserGroupStore) GetAllGroupsByUser(user_id string) ([]*models.Group, error) {
@@ -39,7 +39,7 @@ func (ugs *UserGroupStore) GetAllGroupsByUser(user_id string) ([]*models.Group, 
 	if err != nil {
 		return nil, err
 	}
-	return users
+	return groups, nil
 }
 
 func (ugs *UserGroupStore) GetById(id string) (*models.UserGroup, error) {
@@ -47,8 +47,8 @@ func (ugs *UserGroupStore) GetById(id string) (*models.UserGroup, error) {
 	return user_group, err
 }
 
-func (ugs *UserGroupStore) GetByUserAndGroup(userID, groupID) (*models.UserGroup, error) {
-	user_group, err := egs.getBy(usersGroupsGetByUserAndGroupSQL,
+func (ugs *UserGroupStore) GetByUserAndGroup(userID, groupID string) (*models.UserGroup, error) {
+	user_group, err := ugs.getBy(usersGroupsGetByUserAndGroupSQL,
 		userID,
 		groupID,
 	)
@@ -56,20 +56,20 @@ func (ugs *UserGroupStore) GetByUserAndGroup(userID, groupID) (*models.UserGroup
 }
 
 func (ugs *UserGroupStore) Insert(user_group *models.UserGroup) error {
-	row := egs.db.QueryRow(
+	row := ugs.db.QueryRow(
 		usersGroupsInsertSQL,
-		user_Group.ID,
+		user_group.ID,
 		user_group.UserID,
 		user_group.GroupID,
 	)
-	if err := row.Scan(&userGroup.CreatedAt, &user_group.UpdatedAt); err != nil {
+	if err := row.Scan(&user_group.CreatedAt, &user_group.UpdatedAt); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (ugs *UserGroupStore) Delete(userID, groupID string) error {
-	_, err := egs.db.Exec(usersGroupsDeleteSQL, userID, groupID)
+	_, err := ugs.db.Exec(usersGroupsDeleteSQL, userID, groupID)
 	if err != nil {
 		return ErrNoUserGroupFound
 	}
